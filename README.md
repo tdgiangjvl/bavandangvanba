@@ -1,2 +1,5 @@
 # bavandangvanba
- rythms finding for vietnamese
+ rythmes finding for vietnamese
+
+# requirements
+    - using VnCoreNLP for word segmentation
