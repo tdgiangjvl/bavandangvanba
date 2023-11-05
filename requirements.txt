@@ -1,5 +1,3 @@
-transformers
-py_vncorenlp
-torch
-beautifulsoup4
 requests
+fastapi
+uvicorn[standard]
