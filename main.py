@@ -5,6 +5,7 @@ from core.utils import (
     DbHanlder)
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -19,10 +20,13 @@ app.add_middleware(
 
 db_handler = DbHanlder()
 
+@app.get("/")
+async def homepage():
+    return FileResponse("static/index.html")
 @app.get("/tim_van/{words}")
 async def tim_van(words: str = None):
     if words:
-        result = db_handler.find_van_from_db(extract_van(words))
+        result:str = db_handler.find_van_from_db(extract_van(words))
         if result:
             return {"status":"success", "van": result}
     return {"status":"fail"}
@@ -30,7 +34,7 @@ async def tim_van(words: str = None):
 @app.get("/tim_van_dao/{words}")
 async def tim_van_dao(words: str = None):
     if words:
-        result = db_handler.find_van_from_db(extract_van_dao(words))
+        result:str = db_handler.find_van_from_db(extract_van_dao(words))
         if result:
             return {"status":"success", "van": result}
     return {"status":"fail"}

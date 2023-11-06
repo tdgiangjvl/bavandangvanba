@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Tìm Vần</title>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Tìm Vần</h1>
+        <div class="mb-3">
+            <input type="text" class="form-control" id="inputWords" placeholder="Enter words...">
+        </div>
+        <div class="row mb-3">
+            <div class="col-auto">
+                <button class="btn btn-primary btn-sm" id="timVanButton">Tim Van</button>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-secondary btn-sm" id="timVanDaoButton">Tim Van Dao</button>
+            </div>
+        </div>
+        <div id="result" class="alert alert-info d-none" role="alert"></div>
+    </div>
+    <script>
+        const timVanButton = document.getElementById('timVanButton');
+        const timVanDaoButton = document.getElementById('timVanDaoButton');
+        const inputWords = document.getElementById('inputWords');
+        const result = document.getElementById('result');
+
+        timVanButton.addEventListener('click', async () => {
+            if (inputWords.value.trim()) {
+                const response = await fetch(`/tim_van/${inputWords.value.trim()}`);
+                const data = await response.json();
+                if (data.status === "success") {
+                    result.classList.remove('d-none');
+                    const formattedVan = data.van.replace(/\n/g, '<br>');
+                    result.innerHTML = `Vần: <br>${formattedVan}`;
+                } else {
+                    result.classList.remove('d-none');
+                    result.innerHTML = 'No results found';
+                }
+            }
+        });
+        
+        timVanDaoButton.addEventListener('click', async () => {
+            if (inputWords.value.trim()) {
+                const response = await fetch(`/tim_van_dao/${inputWords.value.trim()}`);
+                const data = await response.json();
+                if (data.status === "success") {
+                    result.classList.remove('d-none');
+                    const formattedVan = data.van.replace(/\n/g, '<br>');
+                    result.innerHTML = `Vần: <br>${formattedVan}`;
+                } else {
+                    result.classList.remove('d-none');
+                    result.innerHTML = 'No results found';
+                }
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>
