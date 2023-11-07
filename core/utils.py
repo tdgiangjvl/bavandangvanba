@@ -4,14 +4,20 @@ import json
 import re
 import sqlite3
 
+def handle_van_i_and_add_space(van:str):
+    if van.startswith('i') and len(van)>1:
+        return '(?<![Gg])' + van + '(?=\s|$)'
+    return   van + '(?=\s|$)'
+
 # PRJ_BASE = os.path.dirname(os.getcwd())
 PRJ_BASE = os.getcwd()
 print(PRJ_BASE)
 with open(os.path.join(PRJ_BASE,'app_metadata/am_tieng_viet.json')) as file:
     vietnamese_grammar = json.load(file)
     
-tat_ca_van = sorted(vietnamese_grammar['vần đơn'] + vietnamese_grammar['vần trơn'] + vietnamese_grammar['vần cản'], key=lambda x:len(x), reverse=True)
-pattern = re.compile('|'.join(tat_ca_van))
+tat_ca_van = sorted(vietnamese_grammar['vần đơn'] + vietnamese_grammar['vần trơn'] + vietnamese_grammar['vần cản'], key=lambda x:(-len(x),x))
+tat_ca_van = [handle_van_i_and_add_space(van) for van in tat_ca_van]
+pattern = re.compile('|'.join(tat_ca_van).replace('|ia|','|(?<![Gg])ia|'))
 
 def clean_mark(text):
     clean_text = text
