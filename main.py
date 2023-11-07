@@ -26,8 +26,9 @@ async def homepage():
 @app.get("/tim_van/{words}")
 async def tim_van(words: str = None, n_received: int = 0, n_request: int = 20):
     if words:
-        result:str = db_handler.find_van_from_db(extract_van(words)).split('\n')
+        result:str = db_handler.find_van_from_db(extract_van(words))
         if result:
+            result = result.split('\n')
             if n_received >= len(result):
                 n_received = max(0,len(result) - n_request)
             return {"status":"success", "van": "\n".join(result[n_received: n_received + n_request])}
@@ -36,8 +37,9 @@ async def tim_van(words: str = None, n_received: int = 0, n_request: int = 20):
 @app.get("/tim_van_dao/{words}")
 async def tim_van_dao(words: str = None, n_received: int = 0, n_request: int = 20):
     if words:
-        result:str = db_handler.find_van_from_db(extract_van_dao(words)).split('\n')
+        result:str = db_handler.find_van_from_db(extract_van_dao(words))
         if result:
+            result = result.split('\n')
             if n_received >= len(result):
                 n_received = max(0,len(result) - n_request)
             return {"status":"success", "van": "\n".join(result[n_received: n_received + n_request])}
