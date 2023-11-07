@@ -11,6 +11,7 @@ def handle_van_i_and_add_space(van:str):
 
 # PRJ_BASE = os.path.dirname(os.getcwd())
 PRJ_BASE = os.getcwd()
+PRJ_BASE = os.path.abspath(__file__).replace('core/utils.py','')
 print(PRJ_BASE)
 with open(os.path.join(PRJ_BASE,'app_metadata/am_tieng_viet.json')) as file:
     vietnamese_grammar = json.load(file)
@@ -44,4 +45,4 @@ class DbHanlder:
         if row:
             return row[0]
         else:
-            return None
+            return ""
