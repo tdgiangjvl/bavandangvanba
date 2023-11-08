@@ -6,7 +6,7 @@ import subprocess
 import sqlite3
 
 def clean_mark(text):
-    clean_text = text
+    clean_text = text.lower()
     for char in vietnamese_grammar['mapping dấu']:
         if char != vietnamese_grammar['mapping dấu'][char]:
             clean_text = clean_text.replace(char,vietnamese_grammar['mapping dấu'][char])
