@@ -7,6 +7,8 @@ import sqlite3
 def handle_van_i_and_add_space(van:str):
     if van.startswith('i') and len(van)>1:
         return '(?<![Gg])' + van + '(?=\s|$)'
+    elif van.startswith('u') and len(van)>1:
+        return '(?<![Qq])' + van + '(?=\s|$)'
     return   van + '(?=\s|$)'
 
 # PRJ_BASE = os.path.dirname(os.getcwd())
