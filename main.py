@@ -20,9 +20,9 @@ app.add_middleware(
 
 db_handler = DbHanlder()
 
-@app.get("/")
-async def homepage():
-    return FileResponse("static/index.html")
+# @app.get("/")
+# async def homepage():
+#     return FileResponse("static/index.html")
 @app.get("/tim_van/{words}")
 async def tim_van(words: str = None, n_received: int = 0, n_request: int = 20):
     if words:
