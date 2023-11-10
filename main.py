@@ -1,11 +1,13 @@
 from core.utils import (
     vn_grammar_handler,
     db_handler,
-    logger)
+    init_logger)
 
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+
+init_logger()
 
 app = FastAPI()
 origins = ["*"]
@@ -20,10 +22,12 @@ app.add_middleware(
 @app.get("/")
 async def homepage():
     return FileResponse("static/index.html")
+
 @app.get("/tim_van/{words}")
 async def tim_van(words: str = None, n_received: int = 0, n_request: int = 20):
     if words:
-        result:str = db_handler.find_van_from_db(vn_grammar_handler.lay_van_cua_tu_hoac_doan(words))
+        clean_text = vn_grammar_handler.bo_dau_va_chuyen_van(words)
+        result:str = db_handler.find_van_from_db(vn_grammar_handler.lay_van_cua_tu_hoac_doan(clean_text))
         if result:
             result = result.split('\n')
             if n_received >= len(result):
@@ -34,7 +38,8 @@ async def tim_van(words: str = None, n_received: int = 0, n_request: int = 20):
 @app.get("/tim_van_dao/{words}")
 async def tim_van_dao(words: str = None, n_received: int = 0, n_request: int = 20):
     if words:
-        result:str = db_handler.find_van_from_db(vn_grammar_handler.lay_van_dao_cua_tu_hoac_doan(words))
+        clean_text = vn_grammar_handler.bo_dau_va_chuyen_van(words)
+        result:str = db_handler.find_van_from_db(vn_grammar_handler.lay_van_dao_cua_tu_hoac_doan(clean_text))
         if result:
             result = result.split('\n')
             if n_received >= len(result):

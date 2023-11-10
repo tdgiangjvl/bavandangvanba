@@ -8,7 +8,11 @@ import logging
 from pydantic import BaseModel
 from typing import List, Dict, Tuple
 
-logger = logging.getLogger(__name__)
+def init_logger():
+    logging.basicConfig(
+    format='%(asctime)s %(levelname)-8s %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S')
 
 # PRJ_BASE = os.path.dirname(os.getcwd())
 PRJ_BASE = os.getcwd()
@@ -62,21 +66,21 @@ class GrammarHandler(BaseModel):
         clean_text = re.sub('\by\b', 'i', clean_text)
         return clean_text.strip()
     
-    def lay_van_cua_tu_hoac_doan(self, text):
-        matches = " ".join(self.pattern_tim_van_khong_dau.findall(self.bo_dau_va_chuyen_van(text)))
-        logger.info(f"Get van: {matches}, from word: {text}")
-        print(f"Get van: {matches}, from word: {text}")
-        return matches
-    def lay_van_dao_cua_tu_hoac_doan(self, text):
-        van_dao = self.pattern_tim_van_khong_dau.findall(self.bo_dau_va_chuyen_van(text))
+    def lay_van_cua_tu_hoac_doan(self, cleaned_text):
+        matches = " ".join(self.pattern_tim_van_khong_dau.findall(cleaned_text))
+        logging.info(f"Get van: {matches}, from word: {cleaned_text}")
+        return matches.strip()
+    
+    def lay_van_dao_cua_tu_hoac_doan(self, cleaned_text):
+        van_dao = self.pattern_tim_van_khong_dau.findall(cleaned_text)
         van_dao.reverse()
         matches = " ".join(van_dao)
-        logger.info(f"Get van dao: {matches}, from word: {text}")
-        print(f"Get van dao: {matches}, from word: {text}")
-        return matches
-    def clean_phu_am(self, text):
-        filtered_text = re.sub(self.pattern_remove_phu_am, '', self.bo_dau_va_chuyen_van(text))
-        return filtered_text
+        logging.info(f"Get van dao: {matches}, from word: {cleaned_text}")
+        return matches.strip()
+    
+    def clean_phu_am(self, cleaned_text):
+        filtered_text = re.sub(self.pattern_remove_phu_am, '', cleaned_text)
+        return filtered_text.strip()
 
 class DbHanlder:
     def __init__(self):
