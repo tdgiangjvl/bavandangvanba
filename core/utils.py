@@ -7,6 +7,10 @@ import logging
 
 from pydantic import BaseModel
 from typing import List, Dict, Tuple
+from pydantic import BaseModel
+from enum import Enum
+from typing import List
+from copy import deepcopy
 
 def init_logger():
     logging.basicConfig(
@@ -52,7 +56,11 @@ class GrammarHandler(BaseModel):
     @staticmethod
     def handle_phu_am_and_skip_if_space(phu_am:str):
         """xử lý logic cho các phụ âm, không lấy phụ âm nếu sau phụ âm là khoảng trắng"""
-        return phu_am + r'(?!\s)' 
+        if phu_am == 'gi':
+            return '((^|\s)' + phu_am + '(?![eê\s]))'
+        if phu_am == 'qu':
+            return '((^|\s)' + phu_am + '(?![ê\s]))'
+        return '((^|\s)' + phu_am + '(?!\s))' 
 
     def bo_dau_va_chuyen_van(self, text):
         """loại bỏ dấu của từ hoặc đoạn sau đó đổi về vần chuẩn - xử lý đặc biệt cho que -> qoe ví dụ que sẽ vần với khoe, y và i đọc giống nhau nên mapping về i"""
@@ -68,18 +76,18 @@ class GrammarHandler(BaseModel):
     
     def lay_van_cua_tu_hoac_doan(self, cleaned_text):
         matches = " ".join(self.pattern_tim_van_khong_dau.findall(cleaned_text))
-        logging.info(f"Get van: {matches}, from word: {cleaned_text}")
+        logging.debug(f"Get van: {matches}, from word: {cleaned_text}")
         return matches.strip()
     
     def lay_van_dao_cua_tu_hoac_doan(self, cleaned_text):
         van_dao = self.pattern_tim_van_khong_dau.findall(cleaned_text)
         van_dao.reverse()
         matches = " ".join(van_dao)
-        logging.info(f"Get van dao: {matches}, from word: {cleaned_text}")
+        logging.debug(f"Get van dao: {matches}, from word: {cleaned_text}")
         return matches.strip()
     
     def clean_phu_am(self, cleaned_text):
-        filtered_text = re.sub(self.pattern_remove_phu_am, '', cleaned_text)
+        filtered_text = re.sub(self.pattern_remove_phu_am, ' ', cleaned_text)
         return filtered_text.strip()
 
 class DbHanlder:
@@ -94,10 +102,100 @@ class DbHanlder:
         else:
             return ""
 
-
-with open(os.path.join(PRJ_BASE,'app_metadata/Vietnamese_Handler.json'), 'r') as infile:
-    loaded_json_str = infile.read()
+class Thanh(Enum):
+    SAC = 'sắc'
+    HOI = 'hỏi'
+    NGA = 'ngã'
+    NANG = 'nặng'
+    HUYEN = 'huyền'
+    NGANG = 'ngang'
     
-vn_grammar_handler = GrammarHandler.parse_raw(loaded_json_str)
+class Tu(BaseModel):
+    phu_am: str
+    van: str
+    thanh: Thanh
+    
+class TuHanlder(BaseModel):
+    mapping_van_dau: dict
+    bien_the_thanh: dict = {
+        Thanh.NGA: [Thanh.HOI], 
+        Thanh.HOI: [Thanh.NGA]
+        }
+    bien_the_van: dict = {
+        "ac":["ăc", "at"],
+        "ăc":["ac", "ăt"],
+        "at":["ac","ăt"],
+        "ăt":["ăc","at"],
+        "êt":["êc"],
+        "êc":["êt"],
+        "ât":["âc"]
+    }
+    bien_the_phu_am: dict = {
+        "gi":["d","v"],
+        "d":["gi","v"],
+        "v":["d","gi"],
+        "k":["c"],
+        "c":["k"],
+        "s":["x"],
+        "x":["s"]
+    }
+    def render_tu(self, tu: Tu):
+        van_va_dau = self.mapping_van_dau.get(f"{tu.van} {tu.thanh.value}",'')
+        if van_va_dau:
+            return tu.phu_am + van_va_dau
+        return ""
+    
+    def render_tu_list(self, tu_list: List[Tu]):
+        return " ".join([self.render_tu(tu) for tu in tu_list])
+    
+    def render_bien_the(self, tu_list: List[Tu]):
+        bien_the_text = []
+        for idx in range(len(tu_list)):
+            for van in self.bien_the_van.get(tu_list[idx].van,[]):
+                bien_the = deepcopy(tu_list)
+                bien_the[idx].van = van
+                bien_the_text.append(self.render_tu_list(bien_the))
+            for thanh in self.bien_the_thanh.get(tu_list[idx].thanh,[]):
+                bien_the = deepcopy(tu_list)
+                bien_the[idx].thanh = thanh
+                bien_the_text.append(self.render_tu_list(bien_the))
+            for phu_am in self.bien_the_phu_am.get(tu_list[idx].phu_am,[]):
+                bien_the = deepcopy(tu_list)
+                bien_the[idx].phu_am = phu_am
+                bien_the_text.append(self.render_tu_list(bien_the))
+        return bien_the_text
+    
+    def render_tu_lai(self, tu_list: List[Tu]):
+        tu_lai_tieu_chuan = []
+        tu_lai_tu_do = []
+        
+        if len(tu_list) > 1:
+            for i in range(6):
+                tu_list[0].phu_am, tu_list[-1].phu_am = tu_list[-1].phu_am, tu_list[0].phu_am
+                if i % 2 == 1:
+                    tu_list[0].van, tu_list[-1].van = tu_list[-1].van, tu_list[0].van
+                if i % 4 == 3:
+                    tu_list[0].thanh, tu_list[-1].thanh = tu_list[-1].thanh, tu_list[0].thanh
+                tu_lai_tieu_chuan.append(self.render_tu_list(tu_list))
+                tu_lai_tu_do.extend(self.render_bien_the(tu_list))
+        return [tu_lai for tu_lai in tu_lai_tieu_chuan if tu_lai != ""], tu_lai_tu_do
+
+
+with open(os.path.join(PRJ_BASE,'app_metadata/am_tieng_viet.json'), 'r') as loaded_json_str:
+    vietnamese_grammar = json.loads(loaded_json_str.read())
+vn_grammar_handler = GrammarHandler(
+    nguyen_am = vietnamese_grammar['nguyên âm'],
+    phu_am = vietnamese_grammar['phụ âm'],
+    phu_am_ghep = vietnamese_grammar['phụ âm ghép'],
+    van_don = vietnamese_grammar['vần đơn'],
+    van_tron = vietnamese_grammar['vần trơn'],
+    van_can = vietnamese_grammar['vần cản'],
+    mapping_dau = vietnamese_grammar['mapping dấu'],
+    mapping_special_char = vietnamese_grammar["mapping âm tiết đặc biệt"]
+)
 db_handler = DbHanlder()
+
+tu_handler = TuHanlder(
+    mapping_van_dau=vietnamese_grammar['mapping vần và thanh']
+)
 
