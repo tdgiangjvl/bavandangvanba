@@ -1,6 +1,7 @@
 from core.utils import (
     vn_grammar_handler,
     db_handler,
+    tu_handler,
     init_logger)
 
 from fastapi import FastAPI
@@ -22,6 +23,17 @@ app.add_middleware(
 @app.get("/")
 async def homepage():
     return FileResponse("static/index.html")
+
+@app.get("/tim_tu_lai/{words}")
+async def tim_tu_lai(words: str = None):
+    if words:
+        list_tu = tu_handler.parse_tu(words, vn_grammar_handler)
+        tieu_chuan, tu_do = tu_handler.render_tu_lai(list_tu)
+        if tieu_chuan:
+            return {"status":"success", 
+                    "tieu_chuan": "\n".join(tieu_chuan),
+                    "tu_do": "\n".join(tu_do)}
+    return {"status":"fail"}
 
 @app.get("/tim_van/{words}")
 async def tim_van(words: str = None, n_received: int = 0, n_request: int = 20):
@@ -46,12 +58,3 @@ async def tim_van_dao(words: str = None, n_received: int = 0, n_request: int = 2
                 n_received = max(0,len(result) - n_request)
             return {"status":"success", "van": "\n".join(result[n_received: n_received + n_request])}
     return {"status":"fail"}
-
-@app.get("/tim_tu_lai/{words}")
-async def tim_van_dao(words: str = None):
-    if True:
-        return {"status":"success", 
-            "tieu_chuan": "\n".join(["bác cạn","các bạn", "cán bạc"]),
-            "tu_do": "\n".join(["bắc cạn","cắt bạn"])}
-    else:
-        return {"status":"fail"}

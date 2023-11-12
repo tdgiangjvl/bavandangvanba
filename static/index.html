@@ -22,12 +22,16 @@
             <div class="col-auto">
                 <button class="btn btn-secondary btn-sm" id="timVanDaoButton">Tim Van Dao</button>
             </div>
+            <div class="col-auto">
+                <button class="btn btn-info btn-sm" id="timTuLaiButton">Tim Tu Lai</button>
+            </div>
         </div>
         <div id="result" class="alert alert-info d-none" role="alert"></div>
     </div>
     <script>
         const timVanButton = document.getElementById('timVanButton');
         const timVanDaoButton = document.getElementById('timVanDaoButton');
+        const timTuLaiButton = document.getElementById('timTuLaiButton');
         const inputWords = document.getElementById('inputWords');
         const result = document.getElementById('result');
 
@@ -54,6 +58,22 @@
                     result.classList.remove('d-none');
                     const formattedVan = data.van.replace(/\n/g, '<br>');
                     result.innerHTML = `Vần: <br>${formattedVan}`;
+                } else {
+                    result.classList.remove('d-none');
+                    result.innerHTML = 'No results found';
+                }
+            }
+        });
+
+        timTuLaiButton.addEventListener('click', async () => {
+            if (inputWords.value.trim()) {
+                const response = await fetch(`/tim_tu_lai/${inputWords.value.trim()}`);
+                const data = await response.json();
+                if (data.status === "success") {
+                    result.classList.remove('d-none');
+                    const formattedTieuChuan = data.tieu_chuan.replace(/\n/g, '<br>');
+                    const formattedTuDo = data.tu_do.replace(/\n/g, '<br>');
+                    result.innerHTML = `Tiêu chuẩn: <br>${formattedTieuChuan}<br><br>Tự do: <br>${formattedTuDo}`;
                 } else {
                     result.classList.remove('d-none');
                     result.innerHTML = 'No results found';

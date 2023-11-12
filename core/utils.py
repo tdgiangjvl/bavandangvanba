@@ -139,9 +139,19 @@ class TuHanlder(BaseModel):
         "s":["x"],
         "x":["s"]
     }
+    mapping_thanh_cua_van: dict = None
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.mapping_thanh_cua_van = {}
+        for van_thanh, van in self.mapping_van_dau.items():
+            _,thanh = van_thanh.split()
+            self.mapping_thanh_cua_van[van] = Thanh(thanh)
+            
     def render_tu(self, tu: Tu):
         van_va_dau = self.mapping_van_dau.get(f"{tu.van} {tu.thanh.value}",'')
         if van_va_dau:
+            if tu.van[0] == 'i' and tu.phu_am == 'gi':
+                return tu.phu_am[0] + tu.van
             return tu.phu_am + van_va_dau
         return ""
     
@@ -178,7 +188,27 @@ class TuHanlder(BaseModel):
                     tu_list[0].thanh, tu_list[-1].thanh = tu_list[-1].thanh, tu_list[0].thanh
                 tu_lai_tieu_chuan.append(self.render_tu_list(tu_list))
                 tu_lai_tu_do.extend(self.render_bien_the(tu_list))
-        return [tu_lai for tu_lai in tu_lai_tieu_chuan if tu_lai != ""], tu_lai_tu_do
+        return list(set([tu_lai for tu_lai in tu_lai_tieu_chuan if tu_lai != ""])), list(set(tu_lai_tu_do))
+    
+    def parse_tu(self, tu_str: str, vn_grammar_handler: GrammarHandler) -> List[Tu]:
+        lower_text = tu_str.lower()
+        cleaned_tu = vn_grammar_handler.bo_dau_va_chuyen_van(lower_text)
+        list_tu = []
+        if vn_grammar_handler.clean_phu_am(cleaned_tu) == vn_grammar_handler.lay_van_cua_tu_hoac_doan(cleaned_tu):
+
+            for raw_tu in lower_text.split():
+                if raw_tu:
+                    van = vn_grammar_handler.clean_phu_am(raw_tu)
+                    phu_am = raw_tu.replace(van,'')
+                    thanh = self.mapping_thanh_cua_van.get(van)
+                    list_tu.append(
+                        Tu(
+                            phu_am=phu_am,
+                            van = self.mapping_van_dau.get(f"{van} {Thanh.NGANG.value}"),
+                            thanh = thanh
+                        )
+                    )
+        return list_tu
 
 
 with open(os.path.join(PRJ_BASE,'app_metadata/am_tieng_viet.json'), 'r') as loaded_json_str:
