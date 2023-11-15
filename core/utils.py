@@ -51,6 +51,8 @@ class GrammarHandler(BaseModel):
             return '(?<![Gg])' + van + '(?=\s|$)'
         elif van=='uê':
             return '(?<![Qq])' + van + '(?=\s|$)'
+        elif van=='ua':
+            return '(?<![Qq])' + van + '(?=\s|$)'
         return  van + '(?=\s|$)'
     
     @staticmethod
