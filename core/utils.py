@@ -4,6 +4,7 @@ import json
 import re
 import sqlite3
 import logging
+import random
 
 from pydantic import BaseModel
 from typing import List, Dict, Tuple
@@ -185,7 +186,6 @@ class TuHanlder(BaseModel):
         exclude = set()
         exclude.add(self.render_tu_list(tu_list))
         exclude.add(self.render_tu_list([tu_list[-1]] + tu_list[1:-1] + [tu_list[0]]))
-        print(exclude)
         if len(tu_list) > 1:
             for i in range(6):
                 tu_list[0].phu_am, tu_list[-1].phu_am = tu_list[-1].phu_am, tu_list[0].phu_am
@@ -238,3 +238,20 @@ tu_handler = TuHanlder(
     mapping_van_dau=vietnamese_grammar['mapping vần và thanh']
 )
 
+
+class FunnySentenceHandler(BaseModel):
+    idioms: List[str] = []
+    punchlines: List[str] = []
+    def get_sentence(self):
+        return random.choice(self.idioms)
+    
+with open(os.path.join(PRJ_BASE,'app_metadata/idioms.txt'), 'r') as file:
+    lines = file.readlines()
+    lines = set([line.strip() for line in lines])
+    lines.remove("")
+    idioms = list(lines)
+    
+funny_sentence_handler = FunnySentenceHandler(
+    idioms = idioms,
+    punchlines = [],
+)
