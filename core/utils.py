@@ -139,7 +139,9 @@ class TuHanlder(BaseModel):
         "k":["c"],
         "c":["k"],
         "s":["x"],
-        "x":["s"]
+        "x":["s"],
+        "ch":["tr"],
+        "tr":["ch"]
     }
     mapping_thanh_cua_van: dict = None
     def __init__(self, **data):
@@ -180,7 +182,10 @@ class TuHanlder(BaseModel):
     def render_tu_lai(self, tu_list: List[Tu]):
         tu_lai_tieu_chuan = []
         tu_lai_tu_do = []
-        
+        exclude = set()
+        exclude.add(self.render_tu_list(tu_list))
+        exclude.add(self.render_tu_list([tu_list[-1]] + tu_list[1:-1] + [tu_list[0]]))
+        print(exclude)
         if len(tu_list) > 1:
             for i in range(6):
                 tu_list[0].phu_am, tu_list[-1].phu_am = tu_list[-1].phu_am, tu_list[0].phu_am
@@ -190,7 +195,9 @@ class TuHanlder(BaseModel):
                     tu_list[0].thanh, tu_list[-1].thanh = tu_list[-1].thanh, tu_list[0].thanh
                 tu_lai_tieu_chuan.append(self.render_tu_list(tu_list))
                 tu_lai_tu_do.extend(self.render_bien_the(tu_list))
-        return list(set([tu_lai for tu_lai in tu_lai_tieu_chuan if tu_lai != ""])), list(set(tu_lai_tu_do))
+        set_tu_lai_tieu_chuan = set([tu_lai for tu_lai in tu_lai_tieu_chuan if tu_lai != ""])
+        set_tu_lai_tieu_chuan.difference_update(exclude)
+        return list(set_tu_lai_tieu_chuan), list(set(tu_lai_tu_do))
     
     def parse_tu(self, tu_str: str, vn_grammar_handler: GrammarHandler) -> List[Tu]:
         lower_text = tu_str.lower()
