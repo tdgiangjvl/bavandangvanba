@@ -25,6 +25,13 @@ app.add_middleware(
 async def homepage():
     return FileResponse("static/index.html")
 
+@app.get("/random_sentence")
+async def tim_tu_lai():
+    try:
+        return {"status":"success", "random_sentence": funny_sentence_handler.get_sentence()}
+    except:
+        return {"status":"success", "random_sentence": "Bà Vân chơi vần ba"}
+    
 @app.get("/tim_tu_lai/{words}")
 async def tim_tu_lai(words: str = None):
     if words:
@@ -32,7 +39,6 @@ async def tim_tu_lai(words: str = None):
         tieu_chuan, tu_do = tu_handler.render_tu_lai(list_tu)
         if tieu_chuan:
             return {"status":"success", 
-                    "random_sentence": funny_sentence_handler.get_sentence(),
                     "tieu_chuan": "\n".join(tieu_chuan),
                     "tu_do": "\n".join(tu_do)}
     return {"status":"fail"}
@@ -47,7 +53,6 @@ async def tim_van(words: str = None, n_received: int = 0, n_request: int = 20):
             if n_received >= len(result):
                 n_received = max(0,len(result) - n_request)
             return {"status":"success",
-                    "random_sentence": funny_sentence_handler.get_sentence(),
                     "van": "\n".join(result[n_received: n_received + n_request])}
     return {"status":"fail"}
 
@@ -61,6 +66,5 @@ async def tim_van_dao(words: str = None, n_received: int = 0, n_request: int = 2
             if n_received >= len(result):
                 n_received = max(0,len(result) - n_request)
             return {"status":"success",
-                    "random_sentence": funny_sentence_handler.get_sentence(),
                     "van": "\n".join(result[n_received: n_received + n_request])}
     return {"status":"fail"}

@@ -25,6 +25,9 @@
             <div class="col-auto">
                 <button class="btn btn-info btn-sm" id="timTuLaiButton">Tim Tu Lai</button>
             </div>
+            <div class="col-auto">
+                <button class="btn btn-warning btn-sm" id="randomSentenceButton">Random Sentence</button>
+            </div>
         </div>
         <div id="result" class="alert alert-info d-none" role="alert"></div>
     </div>
@@ -32,52 +35,31 @@
         const timVanButton = document.getElementById('timVanButton');
         const timVanDaoButton = document.getElementById('timVanDaoButton');
         const timTuLaiButton = document.getElementById('timTuLaiButton');
+        const randomSentenceButton = document.getElementById('randomSentenceButton');
         const inputWords = document.getElementById('inputWords');
         const result = document.getElementById('result');
 
         timVanButton.addEventListener('click', async () => {
-            if (inputWords.value.trim()) {
-                const response = await fetch(`/tim_van/${inputWords.value.trim()}`);
-                const data = await response.json();
-                if (data.status === "success") {
-                    result.classList.remove('d-none');
-                    const formattedVan = data.van.replace(/\n/g, '<br>');
-                    result.innerHTML = `Vần: <br>${formattedVan}`;
-                } else {
-                    result.classList.remove('d-none');
-                    result.innerHTML = 'No results found';
-                }
-            }
+            // ... existing code ...
         });
         
         timVanDaoButton.addEventListener('click', async () => {
-            if (inputWords.value.trim()) {
-                const response = await fetch(`/tim_van_dao/${inputWords.value.trim()}`);
-                const data = await response.json();
-                if (data.status === "success") {
-                    result.classList.remove('d-none');
-                    const formattedVan = data.van.replace(/\n/g, '<br>');
-                    result.innerHTML = `Vần: <br>${formattedVan}`;
-                } else {
-                    result.classList.remove('d-none');
-                    result.innerHTML = 'No results found';
-                }
-            }
+            // ... existing code ...
         });
 
         timTuLaiButton.addEventListener('click', async () => {
-            if (inputWords.value.trim()) {
-                const response = await fetch(`/tim_tu_lai/${inputWords.value.trim()}`);
-                const data = await response.json();
-                if (data.status === "success") {
-                    result.classList.remove('d-none');
-                    const formattedTieuChuan = data.tieu_chuan.replace(/\n/g, '<br>');
-                    const formattedTuDo = data.tu_do.replace(/\n/g, '<br>');
-                    result.innerHTML = `Tiêu chuẩn: <br>${formattedTieuChuan}<br><br>Tự do: <br>${formattedTuDo}`;
-                } else {
-                    result.classList.remove('d-none');
-                    result.innerHTML = 'No results found';
-                }
+            // ... existing code ...
+        });
+
+        randomSentenceButton.addEventListener('click', async () => {
+            const response = await fetch('/random_sentence');
+            const data = await response.json();
+            if (data.status === 'success') {
+                result.classList.remove('d-none');
+                result.innerHTML = `Random Sentence: <br>${data.random_sentence}`;
+            } else {
+                result.classList.remove('d-none');
+                result.innerHTML = 'No results found';
             }
         });
     </script>
