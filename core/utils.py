@@ -50,7 +50,7 @@ class GrammarHandler(BaseModel):
         """Xử lý logic cho phụ âm gi và qu. Với từ gia , quê thì vần lần ượt là a và ê thay vì ia và uê"""
         if van=='ia':
             return '(?<![Gg])' + van + '(?=\s|$)'
-        elif van=='uê':
+        elif van=='ue':
             return '(?<![Qq])' + van + '(?=\s|$)'
         elif van=='ua':
             return '(?<![Qq])' + van + '(?=\s|$)'
