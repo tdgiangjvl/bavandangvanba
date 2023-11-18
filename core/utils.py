@@ -126,6 +126,8 @@ class TuHanlder(BaseModel):
         }
     bien_the_van: dict = {
         "ac":["ăc", "at"],
+        "au":["ao"],
+        "ao":["au"],
         "ăc":["ac", "ăt"],
         "at":["ac","ăt"],
         "ăt":["ăc","at"],
@@ -218,6 +220,17 @@ class TuHanlder(BaseModel):
                         )
                     )
         return list_tu
+    
+    def render_bien_the_van_indexing(self, match_van: str) -> List[str]:
+        vans = match_van.split()
+        final_vans = [vans[0]] + self.bien_the_van.get(vans[0],[])
+        for i in range(1,len(vans)):
+            tmp_vans = []
+            for current_van in final_vans:
+                for next_van in [vans[i]] + self.bien_the_van.get(vans[i],[]):
+                    tmp_vans.append(current_van + ' ' + next_van)
+            final_vans = tmp_vans
+        return final_vans
 
 
 with open(os.path.join(PRJ_BASE,'app_metadata/am_tieng_viet.json'), 'r') as loaded_json_str:
