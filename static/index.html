@@ -40,15 +40,49 @@
         const result = document.getElementById('result');
 
         timVanButton.addEventListener('click', async () => {
-            // ... existing code ...
+            if (inputWords.value.trim()) {
+                const response = await fetch(`/tim_van/${inputWords.value.trim()}`);
+                const data = await response.json();
+                if (data.status === "success") {
+                    result.classList.remove('d-none');
+                    const formattedVan = data.van.replace(/\n/g, '<br>');
+                    result.innerHTML = `Vần: <br>${formattedVan}`;
+                } else {
+                    result.classList.remove('d-none');
+                    result.innerHTML = 'No results found';
+                }
+            }
         });
         
         timVanDaoButton.addEventListener('click', async () => {
-            // ... existing code ...
+            if (inputWords.value.trim()) {
+                const response = await fetch(`/tim_van_dao/${inputWords.value.trim()}`);
+                const data = await response.json();
+                if (data.status === "success") {
+                    result.classList.remove('d-none');
+                    const formattedVan = data.van.replace(/\n/g, '<br>');
+                    result.innerHTML = `Vần: <br>${formattedVan}`;
+                } else {
+                    result.classList.remove('d-none');
+                    result.innerHTML = 'No results found';
+                }
+            }
         });
 
         timTuLaiButton.addEventListener('click', async () => {
-            // ... existing code ...
+            if (inputWords.value.trim()) {
+                const response = await fetch(`/tim_tu_lai/${inputWords.value.trim()}`);
+                const data = await response.json();
+                if (data.status === "success") {
+                    result.classList.remove('d-none');
+                    const formattedTieuChuan = data.tieu_chuan.replace(/\n/g, '<br>');
+                    const formattedTuDo = data.tu_do.replace(/\n/g, '<br>');
+                    result.innerHTML = `Tiêu chuẩn: <br>${formattedTieuChuan}<br><br>Tự do: <br>${formattedTuDo}`;
+                } else {
+                    result.classList.remove('d-none');
+                    result.innerHTML = 'No results found';
+                }
+            }
         });
 
         randomSentenceButton.addEventListener('click', async () => {
