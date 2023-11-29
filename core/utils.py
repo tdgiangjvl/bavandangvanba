@@ -157,7 +157,7 @@ class TuHanlder(BaseModel):
     def render_tu(self, tu: Tu):
         van_va_dau = self.mapping_van_dau.get(f"{tu.van} {tu.thanh.value}",'')
         if van_va_dau:
-            if tu.van[0] == 'i' and tu.phu_am == 'gi':
+            if (tu.van[0] == 'i' and tu.phu_am == 'gi') or (tu.van[0] == 'u' and tu.phu_am == 'qu'):
                 return tu.phu_am[0] + tu.van
             return tu.phu_am + van_va_dau
         return ""
