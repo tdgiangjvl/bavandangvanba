@@ -60,14 +60,14 @@ class GrammarHandler(BaseModel):
     def handle_phu_am_and_skip_if_space(phu_am:str):
         """xử lý logic cho các phụ âm, không lấy phụ âm nếu sau phụ âm là khoảng trắng"""
         if phu_am == 'gi':
-            return '((^|\s)' + phu_am + '(?![eê\s]))'
+            return '((^|\s)' + phu_am + '(?![ê\s]))'
         if phu_am == 'qu':
             return '((^|\s)' + phu_am + '(?![ê\s]))'
         return '((^|\s)' + phu_am + '(?!\s))' 
 
     def bo_dau_va_chuyen_van(self, text):
         """loại bỏ dấu của từ hoặc đoạn sau đó đổi về vần chuẩn - xử lý đặc biệt cho que -> qoe ví dụ que sẽ vần với khoe, y và i đọc giống nhau nên mapping về i"""
-        clean_text = text.lower() + " " # buffer dấu cách để tìm vần ở cuối từ
+        clean_text = text.lower().strip().replace("  "," ") + " " # buffer dấu cách để tìm vần ở cuối từ
         for char, ko_dau_char in self.mapping_dau.items():
             if char != ko_dau_char:
                 clean_text = re.sub(char, ko_dau_char, clean_text)
