@@ -5,7 +5,7 @@ Rythmes-Target is a natural language processing tool designed for the Vietnamese
 ## Features
 
 - **rhyme Analysis**: Provides tools to analyze Vietnamese text, offering insights into : "vần", "nói lái".
-- **rhyme Finding and Generation**: Provides tools to analyze Vietnamese text, offering insights into : "vần", "nói lái".
+- **rhyme Finding, Extraction, Generation**: Provides tools to analyze Vietnamese text, offering insights into : "vần", "nói lái".
 
 ## Requirements
 
