@@ -133,7 +133,10 @@ class TuHanlder(BaseModel):
         "ăt":["ăc","at"],
         "êt":["êc"],
         "êc":["êt"],
-        "ât":["âc"]
+        "ât":["âc"],
+        "an":["ang"],
+        "ang":["an"],
+        
     }
     bien_the_phu_am: dict = {
         "gi":["d","v"],
