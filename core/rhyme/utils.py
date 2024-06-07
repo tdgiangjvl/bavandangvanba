@@ -6,7 +6,6 @@ import sqlite3
 import logging
 import random
 
-from pydantic import BaseModel
 from typing import List, Dict, Tuple
 from pydantic import BaseModel
 from enum import Enum
