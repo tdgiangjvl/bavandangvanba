@@ -1,4 +1,4 @@
-from core.utils import (
+from core.rhyme.utils import (
     vn_grammar_handler,
     db_handler,
     tu_handler,

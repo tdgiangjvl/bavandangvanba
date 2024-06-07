@@ -20,7 +20,7 @@ def init_logger():
 
 # PRJ_BASE = os.path.dirname(os.getcwd())
 PRJ_BASE = os.getcwd()
-PRJ_BASE = os.path.abspath(__file__).replace('core/utils.py','')
+PRJ_BASE = os.path.abspath(__file__).replace('core/rhyme/utils.py','')
 print(PRJ_BASE)
 
 class GrammarHandler(BaseModel):

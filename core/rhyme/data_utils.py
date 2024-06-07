@@ -7,7 +7,7 @@ from typing import Dict
 import os
 import sys
     
-from core.utils import (
+from core.rhyme.utils import (
     vn_grammar_handler,
     init_logger)
 init_logger()
