@@ -41,6 +41,7 @@ class GrammarHandler(BaseModel):
         self.pattern_tim_van_khong_dau = re.compile('|'.join(tat_ca_van))
         
         tat_ca_phu_am = sorted(self.phu_am + self.phu_am_ghep, key=lambda x:(-len(x),x))
+        tat_ca_phu_am += [phu_am.capitalize() for phu_am in tat_ca_phu_am]
         tat_ca_phu_am = [self.handle_phu_am_and_skip_if_space(phu_am) for phu_am in tat_ca_phu_am]
         self.pattern_remove_phu_am = re.compile('|'.join(tat_ca_phu_am))
     
